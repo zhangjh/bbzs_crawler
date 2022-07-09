@@ -5,6 +5,7 @@
     <property name="LOG_HOME" value="./logs/" />
     <property name="log.path" value="${LOG_HOME}/crawler.log" />
     <property name="report.path" value="${LOG_HOME}/report.log" />
+    <property name="app.log.path" value="${LOG_HOME}/app.log" />
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -18,6 +19,16 @@
         <file>${log.path}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}.%d{yyyy-MM-dd}.zip</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%date %level [%thread] %logger{50} [%file : %line] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="app" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.path}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.log.path}.%d{yyyy-MM-dd}.zip</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>%date %level [%thread] %logger{50} [%file : %line] %msg%n</pattern>
@@ -52,6 +63,10 @@
 
     <logger name="report" level="INFO">
         <appender-ref ref="timeFileOutput" />
+    </logger>
+
+    <logger name="me.zhangjh.crawler" level="INFO">
+        <appender-ref ref="app" />
     </logger>
 
     <root level="info">
