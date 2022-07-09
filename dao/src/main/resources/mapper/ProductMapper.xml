@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.zhangjh.crawler.service.ProductMapper">
+  <resultMap id="BaseResultMap" type="me.zhangjh.crawler.entity.ProductDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
+    <result column="brand" jdbcType="VARCHAR" property="brand" />
+    <result column="className" jdbcType="VARCHAR" property="class" />
+    <result column="series" jdbcType="VARCHAR" property="series" />
+    <result column="item_name" jdbcType="VARCHAR" property="itemName" />
+    <result column="price" jdbcType="VARCHAR" property="price" />
+    <result column="item_pic" jdbcType="VARCHAR" property="itemPic" />
+    <result column="item_code" jdbcType="VARCHAR" property="itemCode" />
+    <result column="item_size" jdbcType="VARCHAR" property="itemSize" />
+    <result column="feature" jdbcType="VARCHAR" property="feature" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, create_time, update_time, is_deleted, brand, class, series, item_name, price,
+    item_pic, item_code, item_size, feature
+  </sql>
+  <sql id="Where_Condition">
+    <if test="id != null">
+      and id = #{id}
+    </if>
+    <if test="brand != null">
+      and brand = #{brand}
+    </if>
+    <if test="className != null">
+      and class = #{className}
+    </if>
+    <if test="series != null">
+      and series = #{series}
+    </if>
+    <if test="itemName != null">
+      and item_name = #{itemName}
+    </if>
+    <if test="itemCode != null">
+      and item_code = #{itemCode}
+    </if>
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_products
+    where id = #{id,jdbcType=BIGINT} and is_deleted = 0
+  </select>
+  <select id="selectByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tbl_products
+    where item_code = #{itemCode,jdbcType=VARCHAR} and is_deleted = 0
+  </select>
+  <select id="selectByQuery" parameterType="me.zhangjh.crawler.entity.ProductDO" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tbl_products
+    where is_deleted = 0
+    <include refid="Where_Condition" />
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from tbl_products
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="me.zhangjh.crawler.entity.ProductDO">
+    insert into tbl_products (brand, series, class,
+      item_name, price,
+      item_pic, item_code, item_size, 
+      feature)
+    values (#{brand,jdbcType=VARCHAR}, #{series,jdbcType=VARCHAR}, #{className,jdbcType=VARCHAR},
+      #{itemName,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR},
+      #{itemPic,jdbcType=VARCHAR}, #{itemCode,jdbcType=VARCHAR}, #{itemSize,jdbcType=VARCHAR}, 
+      #{feature,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+    insert ignore into tbl_products (
+      brand, class, series, item_name, price, item_pic, item_code, item_size, feature
+    )
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+        #{item.brand,jdbcType=VARCHAR}, #{item.className,jdbcType=VARCHAR}, #{item.series,jdbcType=VARCHAR},
+        #{item.itemName,jdbcType=VARCHAR}, #{item.price,jdbcType=VARCHAR},
+        #{item.itemPic,jdbcType=VARCHAR}, #{item.itemCode,jdbcType=VARCHAR},
+        #{item.itemSize,jdbcType=VARCHAR}, #{item.feature,jdbcType=VARCHAR}
+      )
+    </foreach>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="me.zhangjh.crawler.entity.ProductDO">
+    update tbl_products
+    <set>
+      <if test="isDeleted != null">
+        is_deleted = #{isDeleted,jdbcType=BIT},
+      </if>
+      <if test="brand != null">
+        brand = #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="className != null">
+        class = #{className,jdbcType=VARCHAR},
+      </if>
+      <if test="series != null">
+        series = #{series,jdbcType=VARCHAR},
+      </if>
+      <if test="itemName != null">
+        item_name = #{itemName,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=VARCHAR},
+      </if>
+      <if test="itemPic != null">
+        item_pic = #{itemPic,jdbcType=VARCHAR},
+      </if>
+      <if test="itemCode != null">
+        item_code = #{itemCode,jdbcType=VARCHAR},
+      </if>
+      <if test="itemSize != null">
+        item_size = #{itemSize,jdbcType=VARCHAR},
+      </if>
+      <if test="feature != null">
+        feature = #{feature,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="me.zhangjh.crawler.entity.ProductDO">
+    update tbl_products
+    set
+      is_deleted = #{isDeleted,jdbcType=BIT},
+      brand = #{brand,jdbcType=VARCHAR},
+      series = #{series,jdbcType=VARCHAR},
+      class = #{className,jdbcType=VARCHAR},
+      item_name = #{itemName,jdbcType=VARCHAR},
+      price = #{price,jdbcType=VARCHAR},
+      item_pic = #{itemPic,jdbcType=VARCHAR},
+      item_code = #{itemCode,jdbcType=VARCHAR},
+      item_size = #{itemSize,jdbcType=VARCHAR},
+      feature = #{feature,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
