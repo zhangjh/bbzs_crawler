@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/bbzs/wx/")
 public class WxController {
 
-    private static final String TOKEN = "";
+    private static final String TOKEN = "8FqhwyzIjsmNx2HAfusQrei3p7gSe7XeBEetzPSlCcV";
 
     private static final char[] HEX_DIGITS = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             'a', 'b', 'c', 'd', 'e', 'f' };
