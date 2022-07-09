@@ -51,8 +51,9 @@ public class LvNewProductListener extends LvNewSeriesProductsCrawler {
 
     @Override
     public List<ProductDO> parseProduct(Page page, Document document, String classname) {
-        Elements elements = document.select(".lv-product-card__info");
-        String series = document.select(".lv-category__name.-new").text();
+        log.info("start parseProduct, className: {}", classname);
+        Elements elements = document.select(PRODUCT_CARD);
+        String series = document.select(PRODUCT_SERIES).text();
         Asserts.notEmpty(series, "series");
         log.info("category parsed total: {}:{}", classname + "_" +  series, elements.size());
 
@@ -76,6 +77,7 @@ public class LvNewProductListener extends LvNewSeriesProductsCrawler {
     @Override
     public void crawlerOnePage(Page page, String url, String classname) throws InterruptedException,
             ExecutionException {
+        log.info("start craw page url: {}", url);
         if(!url.startsWith("http")) {
             url = LV_URL_PRE + url;
         }

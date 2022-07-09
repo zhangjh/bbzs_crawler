@@ -87,6 +87,7 @@ public class LvNewSeriesProductsCrawler extends Crawler {
 
     @Override
     public void crawlerOnePage(Page page, String url, String classname) throws InterruptedException, ExecutionException {
+        log.info("start craw page url: {}", url);
         if(!url.startsWith("http")) {
             url = LV_URL_PRE + url;
         }
@@ -120,6 +121,7 @@ public class LvNewSeriesProductsCrawler extends Crawler {
      * 解析一页产品
      * */
     public List<ProductDO> parseProduct(Page page, Document document, String classname) {
+        log.info("start parseProduct, className: {}", classname);
         Elements elements = document.select(PRODUCT_CARD);
         String series = document.select(PRODUCT_SERIES).text();
         Asserts.notEmpty(series, "series");
@@ -160,6 +162,7 @@ public class LvNewSeriesProductsCrawler extends Crawler {
      * 接收解析过的产品进行业务处理
      * */
     public Object bizHandle(List<ProductDO> productDOS) {
+        log.info("start handle bizLogic");
         if(productDOS.isEmpty()) {
             return null;
         }
