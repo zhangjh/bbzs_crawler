@@ -32,6 +32,8 @@ public abstract class Crawler {
     @Value("${page.wait.timeout}")
     private String scrollWaitTimeout;
 
+    private Browser browser;
+
     public Page getPage() throws Exception {
         PageUtil.init(scrollWaitTimeout);
         // 第一次自动下载，后续不再下载
@@ -49,7 +51,7 @@ public abstract class Crawler {
         options.setDevtools(false);
         options.setViewport(null);
         options.setIgnoreDefaultArgs(Arrays.asList("--disable-extensions", "--enable-automation"));
-        Browser browser = Puppeteer.launch(options);
+        browser = Puppeteer.launch(options);
         Page page = browser.pages().get(0);
         hideHeadless(page);
         return page;
@@ -163,6 +165,10 @@ public abstract class Crawler {
                     page.screenshot(options);
                 } catch (IOException ignored) {
                 }
+            }
+        } finally {
+            if(browser != null) {
+                browser.close();
             }
         }
     }
