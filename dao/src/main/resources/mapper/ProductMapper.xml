@@ -39,6 +39,12 @@
     <if test="itemCode != null">
       and item_code = #{itemCode}
     </if>
+    <if test="offset != null and pageSize != null">
+      limit #{offset}, #{pageSize}
+    </if>
+    <if test="orderBy != null">
+      order by id #{orderBy}
+    </if>
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -52,7 +58,7 @@
     from tbl_products
     where item_code = #{itemCode,jdbcType=VARCHAR} and is_deleted = 0
   </select>
-  <select id="selectByQuery" parameterType="me.zhangjh.crawler.entity.ProductDO" resultMap="BaseResultMap">
+  <select id="selectByQuery" parameterType="me.zhangjh.crawler.entity.ProductQueryDO" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from tbl_products

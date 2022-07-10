@@ -1,6 +1,7 @@
 package me.zhangjh.crawler.service;
 
 import me.zhangjh.crawler.entity.ProductDO;
+import me.zhangjh.crawler.entity.ProductQueryDO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public interface ProductMapper {
 
     ProductDO selectByCode(String code);
 
-    List<ProductDO> selectByQuery(ProductDO productDO);
+    List<ProductDO> selectByQuery(ProductQueryDO productQueryDO);
 
     int updateByPrimaryKeySelective(ProductDO record);
 
