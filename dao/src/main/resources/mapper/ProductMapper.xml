@@ -7,7 +7,7 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
     <result column="brand" jdbcType="VARCHAR" property="brand" />
-    <result column="className" jdbcType="VARCHAR" property="class" />
+    <result column="className" jdbcType="VARCHAR" property="className" />
     <result column="series" jdbcType="VARCHAR" property="series" />
     <result column="item_name" jdbcType="VARCHAR" property="itemName" />
     <result column="price" jdbcType="VARCHAR" property="price" />
