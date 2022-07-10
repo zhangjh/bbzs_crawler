@@ -21,13 +21,13 @@ public class ProductVO implements Serializable {
 
     private String series;
 
-    private String itemName;
+    private String title;
 
     private String price;
 
-    private String itemPic;
+    private String thumb;
 
-    private String itemCode;
+    private String spuId;
 
     private String itemSize;
 
@@ -40,10 +40,10 @@ public class ProductVO implements Serializable {
         productVO.setBrand(productDO.getBrand());
         productVO.setSeries(productDO.getSeries());
         productVO.setClassName(productDO.getClassName());
-        productVO.setItemName(productDO.getItemName());
-        productVO.setItemCode(productDO.getItemCode());
+        productVO.setTitle(productDO.getItemName());
+        productVO.setSpuId(productDO.getItemCode());
         productVO.setPrice(productDO.getPrice());
-        productVO.setItemPic(productDO.getItemPic());
+        productVO.setThumb(productDO.getItemPic());
         productVO.setItemSize(productDO.getItemSize());
         return productVO;
     }

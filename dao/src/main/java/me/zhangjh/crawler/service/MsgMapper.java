@@ -1,10 +1,12 @@
 package me.zhangjh.crawler.service;
 
 import me.zhangjh.crawler.entity.MsgDO;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-public interface MsgDOMapper {
+@Mapper
+public interface MsgMapper {
     int deleteByPrimaryKey(Long id);
 
     int insert(MsgDO record);

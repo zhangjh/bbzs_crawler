@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="me.zhangjh.crawler.service.UserDOMapper">
+<mapper namespace="me.zhangjh.crawler.service.UserMapper">
   <resultMap id="BaseResultMap" type="me.zhangjh.crawler.entity.UserDO">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -19,76 +19,25 @@
     from tbl_user
     where id = #{id,jdbcType=BIGINT}
   </select>
+  <select id="selectByOuterId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tbl_user
+    where is_deleted = 0
+    and outer_id = #{outerId,jdbcType=VARCHAR}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from tbl_user
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="me.zhangjh.crawler.entity.UserDO">
-    insert into tbl_user (id, create_time, update_time, 
-      is_deleted, mobile, outer_id, 
-      user_info)
-    values (#{id,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{isDeleted,jdbcType=BIT}, #{mobile,jdbcType=VARCHAR}, #{outerId,jdbcType=VARCHAR}, 
+    insert into tbl_user (mobile, outer_id, user_info)
+    values (#{mobile,jdbcType=VARCHAR}, #{outerId,jdbcType=VARCHAR},
       #{userInfo,jdbcType=VARCHAR})
-  </insert>
-  <insert id="insertSelective" parameterType="me.zhangjh.crawler.entity.UserDO">
-    insert into tbl_user
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-      <if test="isDeleted != null">
-        is_deleted,
-      </if>
-      <if test="mobile != null">
-        mobile,
-      </if>
-      <if test="outerId != null">
-        outer_id,
-      </if>
-      <if test="userInfo != null">
-        user_info,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="isDeleted != null">
-        #{isDeleted,jdbcType=BIT},
-      </if>
-      <if test="mobile != null">
-        #{mobile,jdbcType=VARCHAR},
-      </if>
-      <if test="outerId != null">
-        #{outerId,jdbcType=VARCHAR},
-      </if>
-      <if test="userInfo != null">
-        #{userInfo,jdbcType=VARCHAR},
-      </if>
-    </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="me.zhangjh.crawler.entity.UserDO">
     update tbl_user
     <set>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
       <if test="isDeleted != null">
         is_deleted = #{isDeleted,jdbcType=BIT},
       </if>
@@ -106,10 +55,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="me.zhangjh.crawler.entity.UserDO">
     update tbl_user
-    set create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      is_deleted = #{isDeleted,jdbcType=BIT},
-      mobile = #{mobile,jdbcType=VARCHAR},
+    set mobile = #{mobile,jdbcType=VARCHAR},
       outer_id = #{outerId,jdbcType=VARCHAR},
       user_info = #{userInfo,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}

@@ -30,19 +30,16 @@
         <dependency>
             <groupId>me.zhangjh.crawler</groupId>
             <artifactId>core</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>me.zhangjh.crawler</groupId>
             <artifactId>dao</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>me.zhangjh.crawler</groupId>
             <artifactId>controller</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>

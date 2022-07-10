@@ -1,10 +1,12 @@
 package me.zhangjh.crawler.service;
 
 import me.zhangjh.crawler.entity.SubscribeDO;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-public interface SubscribeDOMapper {
+@Mapper
+public interface SubscribeMapper {
     int deleteByPrimaryKey(Long id);
 
     int insert(SubscribeDO record);
