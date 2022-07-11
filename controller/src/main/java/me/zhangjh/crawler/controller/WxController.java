@@ -15,6 +15,7 @@ import me.zhangjh.crawler.service.ProductMapper;
 import me.zhangjh.crawler.service.SubscribeMapper;
 import me.zhangjh.crawler.service.UserMapper;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +102,10 @@ public class WxController {
             Long userDOId = userDO.getId();
             SubscribeDO subscribeDO = new SubscribeDO();
             subscribeDO.setUserId(userDOId);
+            List<SubscribeDO> subscribeDOS = subscribeMapper.selectByQuery(subscribeDO);
+            if(CollectionUtils.isNotEmpty(subscribeDOS)) {
+                return Response.fail("无需重复订阅");
+            }
             // 默认不失效
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DAY_OF_YEAR, 99);

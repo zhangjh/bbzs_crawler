@@ -26,7 +26,7 @@
     <if test="bizType != null">
       and biz_type = #{bizType}
     </if>
-    <if test="expired_time != null">
+    <if test="expiredTime != null">
       and expired_time = #{expiredTime}
     </if>
   </sql>
@@ -36,7 +36,7 @@
     from tbl_subscribe
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <select id="selectByQuery" parameterType="me.zhangjh.crawler.entity.MsgDO" resultMap="BaseResultMap">
+  <select id="selectByQuery" parameterType="me.zhangjh.crawler.entity.SubscribeDO" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from tbl_subscribe
