@@ -27,7 +27,7 @@
       and biz_type = #{bizType}
     </if>
     <if test="expiredTime != null">
-      and expired_time = #{expiredTime}
+      and expired_time >= #{expiredTime}
     </if>
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">

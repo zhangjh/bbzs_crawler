@@ -12,6 +12,7 @@ public interface SubscribeMapper {
     int insert(SubscribeDO record);
 
     List<SubscribeDO> selectByQuery(SubscribeDO query);
+
     SubscribeDO selectByPrimaryKey(Long id);
 
     int updateByPrimaryKeySelective(SubscribeDO record);

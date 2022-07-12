@@ -102,12 +102,13 @@ public class WxController {
             if(userDO == null) {
                 return Response.fail("未查询到有效用户，可能没有授权注册");
             }
-            Long userDOId = userDO.getId();
+            Long userId = userDO.getId();
             SubscribeDO subscribeDO = new SubscribeDO();
-            subscribeDO.setUserId(userDOId);
+            subscribeDO.setUserId(userId);
             List<SubscribeDO> subscribeDOS = subscribeMapper.selectByQuery(subscribeDO);
             if(CollectionUtils.isNotEmpty(subscribeDOS)) {
-                return Response.fail("无需重复订阅");
+                log.info("addSubscribe, wxId: {}, userId: {}已经订阅过", wxId, userId);
+                return Response.success(null);
             }
             // 默认不失效
             Calendar calendar = Calendar.getInstance();
