@@ -112,7 +112,7 @@ public class WxController {
             }
             // 默认不失效
             Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DAY_OF_YEAR, 99);
+            calendar.add(Calendar.YEAR, 99);
             subscribeDO.setExpiredTime(calendar.getTime());
             subscribeDO.setType(SubscribeTypeEnum.FOREVER.getType());
             subscribeMapper.insert(subscribeDO);
