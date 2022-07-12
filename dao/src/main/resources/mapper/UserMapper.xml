@@ -33,7 +33,7 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="me.zhangjh.crawler.entity.UserDO">
-    insert into tbl_user (mobile, outer_id, user_info)
+    insert into tbl_user (mobile, outer_id, outer_type, user_info)
     values (#{mobile,jdbcType=VARCHAR}, #{outerId,jdbcType=VARCHAR},
     #{outerType,jdbcType=TINYINT}, #{userInfo,jdbcType=VARCHAR})
   </insert>
