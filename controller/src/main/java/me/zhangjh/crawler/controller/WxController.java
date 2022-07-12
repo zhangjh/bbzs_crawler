@@ -2,15 +2,14 @@ package me.zhangjh.crawler.controller;
 
 import com.alibaba.fastjson.JSON;
 import me.zhangjh.crawler.constant.TypeEnum;
+import me.zhangjh.crawler.controller.entity.MsgVO;
 import me.zhangjh.crawler.controller.entity.ProductVO;
 import me.zhangjh.crawler.controller.request.ProductReq;
 import me.zhangjh.crawler.controller.request.UserReq;
 import me.zhangjh.crawler.controller.response.PageResponse;
 import me.zhangjh.crawler.controller.response.Response;
-import me.zhangjh.crawler.entity.ProductDO;
-import me.zhangjh.crawler.entity.ProductQueryDO;
-import me.zhangjh.crawler.entity.SubscribeDO;
-import me.zhangjh.crawler.entity.UserDO;
+import me.zhangjh.crawler.entity.*;
+import me.zhangjh.crawler.service.MsgMapper;
 import me.zhangjh.crawler.service.ProductMapper;
 import me.zhangjh.crawler.service.SubscribeMapper;
 import me.zhangjh.crawler.service.UserMapper;
@@ -52,6 +51,9 @@ public class WxController {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private MsgMapper msgMapper;
 
     @RequestMapping("/msg")
     @ResponseBody
@@ -145,6 +147,26 @@ public class WxController {
             return Response.success(userDO);
         } catch (Exception e) {
             log.error("getUser exception, outerId: {}, e: {}", outerId, e);
+            return Response.fail(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/getMsg")
+    @ResponseBody
+    public Response<List<MsgVO>> getMsg(String outerId) {
+        try {
+            Assert.isTrue(StringUtils.isNotBlank(outerId), "outerId为空");
+            Response<UserDO> userRes = this.getUser(outerId);
+            Assert.isTrue(userRes.isSuccess() && userRes.getData() != null,
+                    "获取用户失败, outerId:" + outerId);
+            Long userId = userRes.getData().getId();
+            MsgDO msgDO = new MsgDO();
+            msgDO.setUserId(userId);
+            List<MsgDO> msgDOS = msgMapper.selectByQuery(msgDO);
+            List<MsgVO> msgVOS = msgDOS.stream().map(MsgVO::transferDO2VO).collect(Collectors.toList());
+            return Response.success(msgVOS);
+        } catch (Exception e) {
+            log.error("getMsg exception, outerId: {}, e", outerId, e);
             return Response.fail(e.getMessage());
         }
     }

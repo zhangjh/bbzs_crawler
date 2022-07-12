@@ -8,7 +8,7 @@
     <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="type" jdbcType="INTEGER" property="type" />
-    <result column="content" jdbcType="INTEGER" property="content" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
     <result column="feature" jdbcType="VARCHAR" property="feature" />
   </resultMap>
   <sql id="Base_Column_List">
@@ -16,7 +16,8 @@
   </sql>
   <sql id="Where_Condition">
     <if test="userId != null">
-      and user_id = #{userId}
+      <!-- 默认查询系统消息-->
+      and user_id = #{userId} or user_id = 0
     </if>
     <if test="type != null">
       and type = #{type}
@@ -42,7 +43,7 @@
   <insert id="insert" parameterType="me.zhangjh.crawler.entity.MsgDO">
     insert into tbl_msg (user_id, type, content, feature)
     values (#{userId,jdbcType=BIGINT}, #{type,jdbcType=INTEGER},
-      #{content,jdbcType=INTEGER}, #{feature,jdbcType=VARCHAR})
+      #{content,jdbcType=VARCHAR}, #{feature,jdbcType=VARCHAR})
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="me.zhangjh.crawler.entity.MsgDO">
     update tbl_msg
@@ -57,7 +58,7 @@
         type = #{type,jdbcType=INTEGER},
       </if>
       <if test="content != null">
-        content = #{content,jdbcType=INTEGER},
+        content = #{content,jdbcType=VARCHAR},
       </if>
       <if test="feature != null">
         feature = #{feature,jdbcType=VARCHAR},
@@ -72,7 +73,7 @@
       is_deleted = #{isDeleted,jdbcType=BIT},
       user_id = #{userId,jdbcType=BIGINT},
       type = #{type,jdbcType=INTEGER},
-      content = #{content,jdbcType=INTEGER},
+      content = #{content,jdbcType=VARCHAR},
       feature = #{feature,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>

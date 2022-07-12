@@ -21,7 +21,7 @@ public class MsgDO {
 
     private Integer type;
 
-    private Integer content;
+    private String content;
 
     private String feature;
 }
