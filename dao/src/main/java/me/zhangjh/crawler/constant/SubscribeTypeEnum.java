@@ -7,14 +7,14 @@ import lombok.Getter;
  * @date 2022/7/10
  */
 @Getter
-public enum TypeEnum {
+public enum SubscribeTypeEnum {
     FOREVER(0, "永久订阅"),
     ;
 
     private Integer type;
     private String desc;
 
-    TypeEnum(Integer type, String desc) {
+    SubscribeTypeEnum(Integer type, String desc) {
         this.type = type;
         this.desc = desc;
     }

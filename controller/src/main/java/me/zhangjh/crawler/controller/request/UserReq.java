@@ -14,6 +14,8 @@ public class UserReq implements Serializable {
 
     private String outerId;
 
+    private Integer outerType;
+
     private String avatarUrl;
 
     private String nickName;

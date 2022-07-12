@@ -8,10 +8,11 @@
     <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
     <result column="mobile" jdbcType="VARCHAR" property="mobile" />
     <result column="outer_id" jdbcType="VARCHAR" property="outerId" />
+    <result column="outer_type" jdbcType="TINYINT" property="outerType" />
     <result column="user_info" jdbcType="VARCHAR" property="userInfo" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, create_time, update_time, is_deleted, mobile, outer_id, user_info
+    id, create_time, update_time, is_deleted, mobile, outer_id, outer_type user_info
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -19,12 +20,13 @@
     from tbl_user
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <select id="selectByOuterId" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByOuterId" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from tbl_user
     where is_deleted = 0
     and outer_id = #{outerId,jdbcType=VARCHAR}
+    and outer_type = #{outerType,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from tbl_user
@@ -33,7 +35,7 @@
   <insert id="insert" parameterType="me.zhangjh.crawler.entity.UserDO">
     insert into tbl_user (mobile, outer_id, user_info)
     values (#{mobile,jdbcType=VARCHAR}, #{outerId,jdbcType=VARCHAR},
-      #{userInfo,jdbcType=VARCHAR})
+    #{outerType,jdbcType=TINYINT}, #{userInfo,jdbcType=VARCHAR})
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="me.zhangjh.crawler.entity.UserDO">
     update tbl_user
@@ -47,6 +49,9 @@
       <if test="outerId != null">
         outer_id = #{outerId,jdbcType=VARCHAR},
       </if>
+      <if test="outerType != null">
+        outer_type = #{outerType,jdbcType=TINYINT},
+      </if>
       <if test="userInfo != null">
         user_info = #{userInfo,jdbcType=VARCHAR},
       </if>
@@ -57,6 +62,7 @@
     update tbl_user
     set mobile = #{mobile,jdbcType=VARCHAR},
       outer_id = #{outerId,jdbcType=VARCHAR},
+    outer_type = #{outerType,jdbcType=TINYINT},
       user_info = #{userInfo,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>

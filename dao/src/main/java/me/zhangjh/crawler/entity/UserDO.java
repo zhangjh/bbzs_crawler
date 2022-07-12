@@ -21,5 +21,7 @@ public class UserDO {
 
     private String outerId;
 
+    private Integer outerType;
+
     private String userInfo;
 }

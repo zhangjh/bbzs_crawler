@@ -1,7 +1,8 @@
 package me.zhangjh.crawler.controller;
 
 import com.alibaba.fastjson.JSON;
-import me.zhangjh.crawler.constant.TypeEnum;
+import me.zhangjh.crawler.constant.SubscribeTypeEnum;
+import me.zhangjh.crawler.constant.UserTypeEnum;
 import me.zhangjh.crawler.controller.entity.MsgVO;
 import me.zhangjh.crawler.controller.entity.ProductVO;
 import me.zhangjh.crawler.controller.request.ProductReq;
@@ -97,7 +98,7 @@ public class WxController {
     public Response<Void> addSubscribe(String wxId) {
         try {
             Assert.isTrue(StringUtils.isNotBlank(wxId), "wxId为空");
-            UserDO userDO = userMapper.selectByOuterId(wxId);
+            UserDO userDO = userMapper.selectByOuterId(wxId, UserTypeEnum.WEIXIN.getType());
             if(userDO == null) {
                 return Response.fail("未查询到有效用户，可能没有授权注册");
             }
@@ -112,7 +113,7 @@ public class WxController {
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DAY_OF_YEAR, 99);
             subscribeDO.setExpiredTime(calendar.getTime());
-            subscribeDO.setType(TypeEnum.FOREVER.getType());
+            subscribeDO.setType(SubscribeTypeEnum.FOREVER.getType());
             subscribeMapper.insert(subscribeDO);
             return Response.success(null);
         } catch (Exception e) {
@@ -128,6 +129,8 @@ public class WxController {
             UserDO userDO = new UserDO();
             Assert.isTrue(StringUtils.isNotBlank(req.getOuterId()), "outerId为空");
             userDO.setOuterId(req.getOuterId());
+            Assert.isTrue(UserTypeEnum.checkType(req.getOuterType()), "非法的用户类型");
+            userDO.setOuterType(req.getOuterType());
 //            userDO.setMobile();
             userDO.setUserInfo(JSON.toJSONString(req));
             userMapper.insert(userDO);
@@ -143,7 +146,7 @@ public class WxController {
     public Response<UserDO> getUser(String outerId) {
         try {
             Assert.isTrue(StringUtils.isNotBlank(outerId), "outerId为空");
-            UserDO userDO = userMapper.selectByOuterId(outerId);
+            UserDO userDO = userMapper.selectByOuterId(outerId, UserTypeEnum.WEIXIN.getType());
             return Response.success(userDO);
         } catch (Exception e) {
             log.error("getUser exception, outerId: {}, e: {}", outerId, e);

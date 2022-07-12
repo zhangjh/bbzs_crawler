@@ -11,7 +11,7 @@ public interface UserMapper {
 
     UserDO selectByPrimaryKey(Long id);
 
-    UserDO selectByOuterId(String outerId);
+    UserDO selectByOuterId(String outerId, Integer outerType);
 
     int updateByPrimaryKeySelective(UserDO record);
 
