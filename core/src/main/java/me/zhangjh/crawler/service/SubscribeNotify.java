@@ -99,7 +99,7 @@ public class SubscribeNotify {
 
             Map<String, Object> params = new HashMap<>();
             params.put("template_id", templateId);
-            params.put("page", "/msg/index");
+            params.put("page", "pages/msg/index");
             params.put("data", msgDTO);
             params.put("miniprogram_state", programState);
 
@@ -118,7 +118,8 @@ public class SubscribeNotify {
                 if(response.getStatusLine().getStatusCode() == 200) {
                     String res = EntityUtils.toString(response.getEntity());
                     JSONObject jo = JSONObject.parseObject(res);
-                    if(StringUtils.isNotBlank(jo.getString("errcode"))) {
+                    String errcode = jo.getString("errcode");
+                    if(StringUtils.isNotBlank(errcode) && !"0".equals(errcode)) {
                         log.error("sendMsg failed, userId: {}, res: {}", userId, res);
                         return false;
                     }

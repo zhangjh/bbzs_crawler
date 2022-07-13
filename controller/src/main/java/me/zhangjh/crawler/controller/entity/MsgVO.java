@@ -22,6 +22,8 @@ public class MsgVO {
 
     private String content;
 
+    private String readStatus;
+
     public static MsgVO transferDO2VO(MsgDO msgDO) {
         if(msgDO == null) {
             return null;
@@ -33,6 +35,7 @@ public class MsgVO {
         msgVO.setCreateTime(dateFormat.format(msgDO.getCreateTime()));
         msgVO.setType(MsgTypeEnum.getDescByType(msgDO.getType()));
         msgVO.setContent(msgDO.getContent());
+        msgVO.setReadStatus(msgDO.getReadStatus().toString());
         return msgVO;
     }
 }

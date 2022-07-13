@@ -1,6 +1,7 @@
 package me.zhangjh.crawler.service;
 
 import me.zhangjh.crawler.entity.MsgDO;
+import me.zhangjh.crawler.entity.MsgQueryDO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public interface MsgMapper {
 
     int insert(MsgDO record);
 
-    List<MsgDO> selectByQuery(MsgDO query);
+    List<MsgDO> selectByQuery(MsgQueryDO query);
 
     MsgDO selectByPrimaryKey(Long id);
 

@@ -23,5 +23,7 @@ public class MsgDO {
 
     private String content;
 
+    private Boolean readStatus;
+
     private String feature;
 }

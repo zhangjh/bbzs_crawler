@@ -164,9 +164,10 @@ public class WxController {
             Assert.isTrue(userRes.isSuccess() && userRes.getData() != null,
                     "获取用户失败, outerId:" + outerId);
             Long userId = userRes.getData().getId();
-            MsgDO msgDO = new MsgDO();
-            msgDO.setUserId(userId);
-            List<MsgDO> msgDOS = msgMapper.selectByQuery(msgDO);
+            MsgQueryDO queryDO = new MsgQueryDO();
+            queryDO.setUserId(userId);
+            queryDO.setReadStatus(0);
+            List<MsgDO> msgDOS = msgMapper.selectByQuery(queryDO);
             List<MsgVO> msgVOS = msgDOS.stream().map(MsgVO::transferDO2VO).collect(Collectors.toList());
             return Response.success(msgVOS);
         } catch (Exception e) {
