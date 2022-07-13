@@ -175,4 +175,20 @@ public class WxController {
             return Response.fail(e.getMessage());
         }
     }
+
+    @RequestMapping("/updateMsgRead")
+    @ResponseBody
+    public Response<Void> updateMsgRead(Long msgId) {
+        try {
+            Assert.isTrue(msgId != null, "msgId为空");
+            MsgDO msgDO = new MsgDO();
+            msgDO.setId(msgId);
+            msgDO.setReadStatus(true);
+            msgMapper.updateByPrimaryKeySelective(msgDO);
+            return Response.success(null);
+        } catch (Exception e) {
+            log.error("updateMsgRead exception, msgId: {}, e", msgId, e);
+            return Response.fail(e.getMessage());
+        }
+    }
 }
