@@ -1,6 +1,7 @@
 package me.zhangjh.crawler.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import me.zhangjh.crawler.constant.SubscribeTypeEnum;
 import me.zhangjh.crawler.constant.UserTypeEnum;
 import me.zhangjh.crawler.controller.entity.MsgVO;
@@ -26,10 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -176,11 +174,60 @@ public class WxController {
         }
     }
 
+    @RequestMapping("/getNoticed")
+    @ResponseBody
+    public Response<Boolean> getNoticed(String outerId) {
+        try {
+            Response<UserDO> userRes = this.getUser(outerId);
+            Assert.isTrue(userRes.isSuccess() && userRes.getData() != null,
+                    "获取用户失败, outerId:" + outerId);
+            Long userId = userRes.getData().getId();
+            SubscribeDO subscribeQuery = new SubscribeDO();
+            subscribeQuery.setUserId(userId);
+            List<SubscribeDO> subscribeDOS = subscribeMapper.selectByQuery(subscribeQuery);
+            Assert.isTrue(subscribeDOS.size() == 1, "订阅用户查询大于1");
+            SubscribeDO subscribeDO = subscribeDOS.get(0);
+            String feature = subscribeDO.getFeature();
+            JSONObject featureMap = JSONObject.parseObject(feature);
+            if(featureMap == null) {
+                return Response.success(false);
+            }
+            return Response.success(featureMap.getBoolean("noticed"));
+        } catch (Exception e) {
+            log.error("getNoticed exception, outerId: {}, e", outerId, e);
+            return Response.fail(e.getMessage());
+        }
+    }
+
     @RequestMapping("/updateMsgRead")
     @ResponseBody
-    public Response<Void> updateMsgRead(Long msgId) {
+    public Response<Void> updateMsgRead(String outerId, Long msgId) {
         try {
+            Assert.isTrue(StringUtils.isNotBlank(outerId), "outerId为空");
             Assert.isTrue(msgId != null, "msgId为空");
+
+            Response<UserDO> userRes = this.getUser(outerId);
+            Assert.isTrue(userRes.isSuccess() && userRes.getData() != null,
+                    "获取用户失败, outerId:" + outerId);
+            Long userId = userRes.getData().getId();
+            SubscribeDO subscribeQuery = new SubscribeDO();
+            subscribeQuery.setUserId(userId);
+            List<SubscribeDO> subscribeDOS = subscribeMapper.selectByQuery(subscribeQuery);
+            Assert.isTrue(subscribeDOS.size() == 1, "订阅用户查询大于1");
+            SubscribeDO subscribe = subscribeDOS.get(0);
+            String feature = subscribe.getFeature();
+            JSONObject featureMap = JSONObject.parseObject(feature);
+            // 是否已知晓，已知晓忽略，为空则记录更新
+            if(featureMap == null) {
+                featureMap = new JSONObject();
+            }
+            Boolean noticed = featureMap.getBoolean("noticed");
+            if(noticed == null || !noticed) {
+                featureMap.put("noticed", 1);
+                subscribe.setFeature(JSONObject.toJSONString(featureMap));
+                subscribeMapper.updateByPrimaryKeySelective(subscribe);
+            }
+
             MsgDO msgDO = new MsgDO();
             msgDO.setId(msgId);
             msgDO.setReadStatus(true);
