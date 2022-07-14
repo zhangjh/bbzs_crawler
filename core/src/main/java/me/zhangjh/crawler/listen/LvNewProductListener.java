@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.zhangjh.crawler.LvNewSeriesProductsCrawler;
 import me.zhangjh.crawler.entity.ProductDO;
 import me.zhangjh.crawler.service.ProductMapper;
+import me.zhangjh.crawler.service.SubscribeNotify;
 import org.apache.http.util.Asserts;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -39,6 +40,9 @@ public class LvNewProductListener extends LvNewSeriesProductsCrawler {
 
     @Autowired
     private ProductMapper productMapper;
+
+    @Autowired
+    private SubscribeNotify subscribeNotify;
 
     @Override
     public Object bizHandle(List<ProductDO> productDOS) {
@@ -125,6 +129,7 @@ public class LvNewProductListener extends LvNewSeriesProductsCrawler {
 
     private Object notify(List<ProductDO> newProducts) {
         log.info("新品通知: {}", JSONObject.toJSONString(newProducts));
+        subscribeNotify.send(newProducts);
         return null;
     }
 

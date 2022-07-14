@@ -24,10 +24,7 @@ import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhangjh
@@ -57,12 +54,29 @@ public class SubscribeNotify {
 
     @PostConstruct
     public void test() {
-        System.out.println(this.getWxToken());
+        List<ProductDO> productDOS = new ArrayList<>();
         ProductDO productDO = new ProductDO();
-        productDO.setItemName("LV包包");
+        productDO.setItemName("LV包包1");
+        productDO.setItemCode("1");
         productDO.setPrice("10000");
         productDO.setCreateTime(new Date());
-        this.send(productDO);
+        productDOS.add(productDO);
+
+        ProductDO productDO2 = new ProductDO();
+        productDO2.setItemName("LV包包2");
+        productDO2.setPrice("10000");
+        productDO2.setItemCode("2");
+        productDO2.setCreateTime(new Date());
+        productDOS.add(productDO2);
+
+        ProductDO productDO3 = new ProductDO();
+        productDO3.setItemName("LV包包3");
+        productDO3.setItemCode("3");
+        productDO3.setPrice("10000");
+        productDO3.setCreateTime(new Date());
+        productDOS.add(productDO3);
+
+        this.send(productDOS);
     }
 
     public String getWxToken() {
@@ -84,54 +98,75 @@ public class SubscribeNotify {
     }
 
     @SneakyThrows
-    public Boolean send(ProductDO productDO) {
+    public void send(List<ProductDO> productDOS) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String token = this.getWxToken();
-        Assert.isTrue(StringUtils.isNotBlank(token), "获取accessToken失败");
+
         try(CloseableHttpClient client = HttpClients.createDefault()) {
-            HttpPost httpPost =
-                    new HttpPost("https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + token);
-            WxMsgDTO msgDTO = new WxMsgDTO();
-            msgDTO.setThing1(new WxMsgField(productDO.getItemName()));
-            msgDTO.setThing3(new WxMsgField("上新啦！点击查看消息"));
-            msgDTO.setTime5(new WxMsgField(sdf.format(productDO.getCreateTime())));
-            msgDTO.setAmount2(new WxMsgField(productDO.getPrice()));
+            int msgSendNum = 0;
 
             Map<String, Object> params = new HashMap<>();
             params.put("template_id", templateId);
-            params.put("page", "pages/msg/index");
-            params.put("data", msgDTO);
             params.put("miniprogram_state", programState);
 
-            SubscribeDO subscribeDO = new SubscribeDO();
-            subscribeDO.setExpiredTime(new Date());
-            List<SubscribeDO> subscribes = subscribeMapper.selectByQuery(subscribeDO);
-            for (SubscribeDO subscribe : subscribes) {
-                Long userId = subscribe.getUserId();
-                UserDO userDO = userMapper.selectByPrimaryKey(userId);
-                Assert.isTrue(userDO != null, "userId错误，userId:" + userId);
-                String outerId = userDO.getOuterId();
-                Assert.isTrue(StringUtils.isNotBlank(outerId), "微信openid为空");
-                params.put("touser", outerId);
-                httpPost.setEntity(new StringEntity(JSONObject.toJSONString(params), ContentType.APPLICATION_JSON));
-                CloseableHttpResponse response = client.execute(httpPost);
-                if(response.getStatusLine().getStatusCode() == 200) {
-                    String res = EntityUtils.toString(response.getEntity());
-                    JSONObject jo = JSONObject.parseObject(res);
-                    String errcode = jo.getString("errcode");
-                    if(StringUtils.isNotBlank(errcode) && !"0".equals(errcode)) {
-                        log.error("sendMsg failed, userId: {}, res: {}", userId, res);
-                        return false;
-                    }
-                    return true;
-                } else {
-                    throw new RuntimeException("请求出错, res status: " + response.getStatusLine().getStatusCode());
+            for (ProductDO productDO : productDOS) {
+                WxMsgDTO msgDTO = new WxMsgDTO();
+                msgDTO.setThing1(new WxMsgField(productDO.getItemName()));
+                msgDTO.setThing3(new WxMsgField("上新啦！点击查看消息"));
+                msgDTO.setTime5(new WxMsgField(sdf.format(productDO.getCreateTime())));
+                msgDTO.setAmount2(new WxMsgField("¥" + productDO.getPrice()));
+
+                params.put("page", "pages/msg/index?itemCode=" + productDO.getItemCode());
+                params.put("data", msgDTO);
+
+                SubscribeDO subscribeDO = new SubscribeDO();
+                subscribeDO.setExpiredTime(new Date());
+                List<SubscribeDO> subscribes = subscribeMapper.selectByQuery(subscribeDO);
+                wxMsgSend(client, params, subscribes);
+
+                msgSendNum ++;
+                // 默认只发两条，再多就提醒进小程序看了
+                if(msgSendNum == 1) {
+                    msgDTO.setThing1(new WxMsgField("多款商品上新"));
+                    msgDTO.setThing3(new WxMsgField("上新啦！去小程序查看更多"));
+                    msgDTO.setTime5(new WxMsgField(sdf.format(new Date())));
+                    msgDTO.setAmount2(new WxMsgField(""));
+                    params.put("data", msgDTO);
+                    params.put("page", "pages/msg/index");
+                    wxMsgSend(client, params, subscribes);
                 }
             }
         } catch (Exception e) {
             log.error("sendMsg exception, e:", e);
-            return false;
         }
-        return false;
+    }
+
+    private void wxMsgSend(CloseableHttpClient client, Map<String, Object> params, List<SubscribeDO> subscribes) throws Exception {
+        String token = this.getWxToken();
+        Assert.isTrue(StringUtils.isNotBlank(token), "获取accessToken失败");
+
+        for (SubscribeDO subscribe : subscribes) {
+            Long userId = subscribe.getUserId();
+            UserDO userDO = userMapper.selectByPrimaryKey(userId);
+            Assert.isTrue(userDO != null, "userId错误，userId:" + userId);
+            String outerId = userDO.getOuterId();
+            Assert.isTrue(StringUtils.isNotBlank(outerId), "微信openid为空");
+            params.put("touser", outerId);
+
+            HttpPost httpPost =
+                    new HttpPost("https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + token);
+            httpPost.setEntity(new StringEntity(JSONObject.toJSONString(params), ContentType.APPLICATION_JSON));
+            CloseableHttpResponse response = client.execute(httpPost);
+            if(response.getStatusLine().getStatusCode() == 200) {
+                String res = EntityUtils.toString(response.getEntity());
+                JSONObject jo = JSONObject.parseObject(res);
+                String errcode = jo.getString("errcode");
+                if(StringUtils.isNotBlank(errcode) && !"0".equals(errcode)) {
+                    log.error("sendMsg failed, params: {}, res: {}", params, res);
+                    throw new RuntimeException("消息发送失败, errcode: " + errcode);
+                }
+            } else {
+                throw new RuntimeException("请求出错, res status: " + response.getStatusLine().getStatusCode());
+            }
+        }
     }
 }
