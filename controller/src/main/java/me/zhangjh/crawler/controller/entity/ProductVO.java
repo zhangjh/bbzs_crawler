@@ -27,6 +27,8 @@ public class ProductVO implements Serializable {
 
     private String thumb;
 
+    private String itemUrl;
+
     private String spuId;
 
     private String itemSize;
@@ -44,6 +46,7 @@ public class ProductVO implements Serializable {
         productVO.setSpuId(productDO.getItemCode());
         productVO.setPrice(productDO.getPrice());
         productVO.setThumb(productDO.getItemPic());
+        productVO.setItemUrl(productDO.getItemUrl());
         productVO.setItemSize(productDO.getItemSize());
         return productVO;
     }

@@ -12,13 +12,14 @@
     <result column="item_name" jdbcType="VARCHAR" property="itemName" />
     <result column="price" jdbcType="VARCHAR" property="price" />
     <result column="item_pic" jdbcType="VARCHAR" property="itemPic" />
+    <result column="item_url" jdbcType="VARCHAR" property="itemUrl" />
     <result column="item_code" jdbcType="VARCHAR" property="itemCode" />
     <result column="item_size" jdbcType="VARCHAR" property="itemSize" />
     <result column="feature" jdbcType="VARCHAR" property="feature" />
   </resultMap>
   <sql id="Base_Column_List">
     id, create_time, update_time, is_deleted, brand, class, series, item_name, price,
-    item_pic, item_code, item_size, feature
+    item_pic, item_url, item_code, item_size, feature
   </sql>
   <sql id="Where_Condition">
     <if test="id != null">
@@ -71,23 +72,23 @@
   </delete>
   <insert id="insert" parameterType="me.zhangjh.crawler.entity.ProductDO">
     insert into tbl_products (brand, series, class,
-      item_name, price,
+      item_name, price, item_url,
       item_pic, item_code, item_size, 
       feature)
     values (#{brand,jdbcType=VARCHAR}, #{series,jdbcType=VARCHAR}, #{className,jdbcType=VARCHAR},
-      #{itemName,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR},
+      #{itemName,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, #{itemUrl,jdbcType=VARCHAR},
       #{itemPic,jdbcType=VARCHAR}, #{itemCode,jdbcType=VARCHAR}, #{itemSize,jdbcType=VARCHAR}, 
       #{feature,jdbcType=VARCHAR})
   </insert>
   <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
     insert ignore into tbl_products (
-      brand, class, series, item_name, price, item_pic, item_code, item_size, feature
+      brand, class, series, item_name, price, item_url, item_pic, item_code, item_size, feature
     )
     values
     <foreach collection="list" item="item" index="index" separator=",">
       (
         #{item.brand,jdbcType=VARCHAR}, #{item.className,jdbcType=VARCHAR}, #{item.series,jdbcType=VARCHAR},
-        #{item.itemName,jdbcType=VARCHAR}, #{item.price,jdbcType=VARCHAR},
+        #{item.itemName,jdbcType=VARCHAR}, #{item.price,jdbcType=VARCHAR}, #{item.itemUrl,jdbcType=VARCHAR},
         #{item.itemPic,jdbcType=VARCHAR}, #{item.itemCode,jdbcType=VARCHAR},
         #{item.itemSize,jdbcType=VARCHAR}, #{item.feature,jdbcType=VARCHAR}
       )
@@ -116,6 +117,9 @@
       </if>
       <if test="itemPic != null">
         item_pic = #{itemPic,jdbcType=VARCHAR},
+      </if>
+      <if test="itemUrl != null">
+        item_url = #{itemUrl,jdbcType=VARCHAR},
       </if>
       <if test="itemCode != null">
         item_code = #{itemCode,jdbcType=VARCHAR},
