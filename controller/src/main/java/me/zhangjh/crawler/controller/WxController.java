@@ -205,7 +205,11 @@ public class WxController {
         try {
             Assert.isTrue(StringUtils.isNotBlank(outerId), "outerId为空");
             Assert.isTrue(msgId != null, "msgId为空");
-
+            // 已经是已读了幂等掉
+            MsgDO msgDO = msgMapper.selectByPrimaryKey(msgId);
+            if(msgDO.getReadStatus().equals(true)) {
+                return Response.success(null);
+            }
             Response<UserDO> userRes = this.getUser(outerId);
             Assert.isTrue(userRes.isSuccess() && userRes.getData() != null,
                     "获取用户失败, outerId:" + outerId);
@@ -228,7 +232,6 @@ public class WxController {
                 subscribeMapper.updateByPrimaryKeySelective(subscribe);
             }
 
-            MsgDO msgDO = new MsgDO();
             msgDO.setId(msgId);
             msgDO.setReadStatus(true);
             msgMapper.updateByPrimaryKeySelective(msgDO);
