@@ -146,7 +146,9 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         String name = link.text();
         String price = element.select(PRODUCT_PRICE).text();
         String img = "";
-        String srcset = element.select(PRODUCT_IMAGE).attr("srcset");
+        assert element.parent() != null;
+        assert element.parent().parent() != null;
+        String srcset = element.parent().parent().select("img").attr("data-srcset");
         if(StringUtils.isNotBlank("srcset")) {
             img = srcset.split(" ")[0];
         }
