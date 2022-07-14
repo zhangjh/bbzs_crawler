@@ -5,9 +5,15 @@ import com.ruiyun.jvppeteer.core.page.Page;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.extern.slf4j.Slf4j;
 import me.zhangjh.crawler.LvNewSeriesProductsCrawler;
+import me.zhangjh.crawler.constant.MsgTypeEnum;
+import me.zhangjh.crawler.entity.MsgDO;
 import me.zhangjh.crawler.entity.ProductDO;
+import me.zhangjh.crawler.entity.SubscribeDO;
+import me.zhangjh.crawler.service.MsgMapper;
 import me.zhangjh.crawler.service.ProductMapper;
+import me.zhangjh.crawler.service.SubscribeMapper;
 import me.zhangjh.crawler.service.SubscribeNotify;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.http.util.Asserts;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -42,7 +48,13 @@ public class LvNewProductListener extends LvNewSeriesProductsCrawler {
     private ProductMapper productMapper;
 
     @Autowired
+    private MsgMapper msgMapper;
+
+    @Autowired
     private SubscribeNotify subscribeNotify;
+
+    @Autowired
+    private SubscribeMapper subscribeMapper;
 
     @Override
     public Object bizHandle(List<ProductDO> productDOS) {
@@ -50,7 +62,24 @@ public class LvNewProductListener extends LvNewSeriesProductsCrawler {
             return false;
         }
         productMapper.insertBatch(productDOS);
-        return this.notify(productDOS);
+        String productsJstr = JSONObject.toJSONString(productDOS);
+
+        SubscribeDO subscribeQuery = new SubscribeDO();
+        List<SubscribeDO> subscribes = subscribeMapper.selectByQuery(subscribeQuery);
+        if(CollectionUtils.isNotEmpty(subscribes)) {
+            List<MsgDO> msgDOS = new ArrayList<>();
+            for (SubscribeDO subscribe : subscribes) {
+                MsgDO msgDO = new MsgDO();
+                msgDO.setContent(productsJstr);
+                msgDO.setType(MsgTypeEnum.NEW_PRODUCT.getType());
+                msgDO.setUserId(subscribe.getUserId());
+                msgDOS.add(msgDO);
+            }
+            msgMapper.insertBatch(msgDOS);
+            return this.notify(productDOS);
+        }
+        log.info("暂无订阅用户，无需发送消息");
+        return null;
     }
 
     @Override

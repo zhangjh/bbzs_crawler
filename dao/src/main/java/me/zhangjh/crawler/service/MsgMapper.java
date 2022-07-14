@@ -12,6 +12,8 @@ public interface MsgMapper {
 
     int insert(MsgDO record);
 
+    int insertBatch(List<MsgDO> msgDOS);
+
     List<MsgDO> selectByQuery(MsgQueryDO query);
 
     MsgDO selectByPrimaryKey(Long id);

@@ -55,7 +55,6 @@
         <dependency>
             <groupId>me.zhangjh.crawler</groupId>
             <artifactId>dao</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.xuxueli</groupId>
@@ -64,6 +63,10 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
         </dependency>
 
     </dependencies>

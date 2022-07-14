@@ -52,6 +52,16 @@
     values (#{userId,jdbcType=BIGINT}, #{type,jdbcType=INTEGER},
       #{content,jdbcType=VARCHAR}, #{feature,jdbcType=VARCHAR})
   </insert>
+  <insert id="insertBatch" parameterType="java.util.List">
+    insert into tbl_msg (user_id, type, content, feature)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{userId,jdbcType=BIGINT}, #{type,jdbcType=INTEGER},
+      #{content,jdbcType=VARCHAR}, #{feature,jdbcType=VARCHAR}
+      )
+    </foreach>
+  </insert>
   <update id="updateByPrimaryKeySelective" parameterType="me.zhangjh.crawler.entity.MsgDO">
     update tbl_msg
     <set>
