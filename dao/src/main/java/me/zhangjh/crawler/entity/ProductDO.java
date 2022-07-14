@@ -29,6 +29,8 @@ public class ProductDO {
 
     private String itemPic;
 
+    private String itemUrl;
+
     private String itemCode;
 
     private String itemSize;

@@ -38,5 +38,7 @@ public class Constant {
         public static final String PRODUCT_SERIES = ".lv-category__name.-new";
         // 产品价格
         public static final String PRODUCT_PRICE = "span.notranslate";
+        // 产品主图
+        public static final String PRODUCT_IMAGE = "picture > img";
     }
 }

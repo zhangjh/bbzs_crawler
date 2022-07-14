@@ -4,6 +4,7 @@ import com.ruiyun.jvppeteer.core.page.Page;
 import lombok.extern.slf4j.Slf4j;
 import me.zhangjh.crawler.entity.ProductDO;
 import me.zhangjh.crawler.service.ProductMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.Asserts;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -144,6 +145,11 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         String href = link.attr("href");
         String name = link.text();
         String price = element.select(PRODUCT_PRICE).text();
+        String img = "";
+        String srcset = element.select(PRODUCT_IMAGE).attr("srcset");
+        if(StringUtils.isNotBlank("srcset")) {
+            img = srcset.split(" ")[0];
+        }
         Asserts.notEmpty(id, "id");
         Asserts.notEmpty(name, "name");
 //        Asserts.notEmpty(price, name + ": price");
@@ -154,7 +160,8 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         record.setItemCode(id);
         record.setItemName(name);
         record.setPrice(price);
-        record.setItemPic(href);
+        record.setItemUrl(href);
+        record.setItemPic(img);
         return record;
     }
 

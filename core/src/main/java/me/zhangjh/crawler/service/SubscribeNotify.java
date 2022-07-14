@@ -112,7 +112,8 @@ public class SubscribeNotify {
                 WxMsgDTO msgDTO = new WxMsgDTO();
                 msgDTO.setThing1(new WxMsgField(productDO.getItemName()));
                 msgDTO.setThing3(new WxMsgField("上新啦！点击查看消息"));
-                msgDTO.setTime5(new WxMsgField(sdf.format(productDO.getCreateTime())));
+                msgDTO.setTime5(new WxMsgField(sdf.format(productDO.getCreateTime() != null ?
+                        productDO.getCreateTime() : new Date())));
                 msgDTO.setAmount2(new WxMsgField("¥" + productDO.getPrice()));
 
                 params.put("page", "pages/msg/index?itemCode=" + productDO.getItemCode());

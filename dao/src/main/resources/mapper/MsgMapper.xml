@@ -57,8 +57,8 @@
     values
     <foreach collection="list" item="item" index="index" separator=",">
       (
-      #{userId,jdbcType=BIGINT}, #{type,jdbcType=INTEGER},
-      #{content,jdbcType=VARCHAR}, #{feature,jdbcType=VARCHAR}
+      #{item.userId,jdbcType=BIGINT}, #{item.type,jdbcType=INTEGER},
+      #{item.content,jdbcType=VARCHAR}, #{item.feature,jdbcType=VARCHAR}
       )
     </foreach>
   </insert>

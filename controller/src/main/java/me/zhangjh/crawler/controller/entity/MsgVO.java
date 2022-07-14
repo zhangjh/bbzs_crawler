@@ -30,7 +30,7 @@ public class MsgVO {
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         MsgVO msgVO = new MsgVO();
-        msgDO.setId(msgDO.getId());
+        msgVO.setId(msgDO.getId());
         msgVO.setUserId(msgDO.getUserId());
         msgVO.setCreateTime(dateFormat.format(msgDO.getCreateTime()));
         msgVO.setType(MsgTypeEnum.getDescByType(msgDO.getType()));
