@@ -82,6 +82,7 @@ public class WxController {
                 queryDO.setPageSize(pageSize);
                 queryDO.setOffset((pageIndex - 1) * pageSize);
             }
+            queryDO.setOrderBy("id");
             List<ProductDO> productDOS = productMapper.selectByQuery(queryDO);
             List<ProductVO> productVOS = productDOS.stream().map(ProductVO::transferDO2VO).collect(Collectors.toList());
             return Response.success(productVOS);

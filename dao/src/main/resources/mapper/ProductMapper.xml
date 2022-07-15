@@ -44,7 +44,7 @@
       limit #{offset}, #{pageSize}
     </if>
     <if test="orderBy != null">
-      order by id #{orderBy}
+      order by id #{orderBy} desc
     </if>
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
