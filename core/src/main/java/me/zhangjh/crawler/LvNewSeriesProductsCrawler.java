@@ -1,6 +1,7 @@
 package me.zhangjh.crawler;
 
 import com.ruiyun.jvppeteer.core.page.Page;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.zhangjh.crawler.entity.ProductDO;
 import me.zhangjh.crawler.service.ProductMapper;
@@ -129,8 +130,8 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         log.info("category parsed total: {}:{}", classname + "_" +  series, elements.size());
 
         List<ProductDO> records = new ArrayList<>();
-        for (Element element : elements) {
-            ProductDO productDO = handleElement(element);
+        for (int i = 0; i < elements.size(); i++) {
+            ProductDO productDO = handleElement(page, document, i);
             productDO.setSeries(series);
             productDO.setClassName(classname);
             records.add(productDO);
@@ -138,7 +139,10 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         return records;
     }
 
-    public ProductDO handleElement(Element element) {
+    @SneakyThrows
+    public ProductDO handleElement(Page page, Document document, int i) {
+        Elements elements = document.select(PRODUCT_CARD);
+        Element element = elements.get(i);
         Elements h2 = element.select("h2");
         String id = h2.attr("id");
         Elements link = h2.select("a");
@@ -154,8 +158,16 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         }
         Asserts.notEmpty(id, "id");
         Asserts.notEmpty(name, "name");
-//        Asserts.notEmpty(price, name + ": price");
-        price = price.isEmpty() ? "-" : price;
+        if(price.isEmpty()) {
+            log.error("price is empty");
+            page.evaluate("() => {window.scrollBy(0, window.screen.height);}");
+            page.waitFor(scrollWaitTimeout);
+            document = Jsoup.parse(page.content());
+            elements = document.select(PRODUCT_CARD);
+            element = elements.get(i);
+            price = element.select(PRODUCT_PRICE).text();
+        }
+        Asserts.notEmpty(price, name + ": price");
         Asserts.notEmpty(href, name + ": href");
         ProductDO record = new ProductDO();
         record.setBrand("LV");

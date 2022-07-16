@@ -17,7 +17,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.http.util.Asserts;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -91,8 +90,8 @@ public class LvNewProductListener extends LvNewSeriesProductsCrawler {
         log.info("category parsed total: {}:{}", classname + "_" +  series, elements.size());
 
         List<ProductDO> records = new ArrayList<>();
-        for (Element element : elements) {
-            ProductDO productDO = handleElement(element);
+        for (int i = 0; i < elements.size(); i++) {
+            ProductDO productDO = handleElement(page, document, i);
             productDO.setSeries(series);
             productDO.setClassName(classname);
             ProductDO record = productMapper.selectByCode(productDO.getItemCode());

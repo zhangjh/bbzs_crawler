@@ -40,11 +40,11 @@
     <if test="itemCode != null">
       and item_code = #{itemCode}
     </if>
+    <if test="orderBy != null">
+      order by ${orderBy} desc
+    </if>
     <if test="offset != null and pageSize != null">
       limit #{offset}, #{pageSize}
-    </if>
-    <if test="orderBy != null">
-      order by id #{orderBy} desc
     </if>
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
