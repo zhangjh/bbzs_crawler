@@ -18,16 +18,22 @@ import me.zhangjh.crawler.service.UserMapper;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +47,12 @@ public class WxController {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private static final String TOKEN = "wiredSheep";
+
+    @Value("${wx.appId}")
+    private String appId;
+
+    @Value("${wx.appSecret}")
+    private String secret;
 
     @Autowired
     private ProductMapper productMapper;
@@ -67,6 +79,26 @@ public class WxController {
             return echostr;
         } else {
             return "";
+        }
+    }
+
+    @GetMapping("/checkLoginToken")
+    public Response<String> checkLoginToken(String code) {
+        try(CloseableHttpClient client = HttpClients.createDefault()) {
+            Assert.isTrue(StringUtils.isNotBlank(code), "code为空");
+            HttpGet httpGet = new HttpGet("https://api.weixin.qq.com/sns/jscode2session?appid=" +
+                    appId + "&secret=" + secret +
+                    "&js_code=" + code + "&grant_type=authorization_code");
+            CloseableHttpResponse response = client.execute(httpGet);
+            if(response.getStatusLine().getStatusCode() != 200) {
+                throw new RuntimeException(String.valueOf(response.getStatusLine().getStatusCode()));
+            }
+            String res = EntityUtils.toString(response.getEntity());
+            JSONObject jo = JSONObject.parseObject(res);
+            return Response.success(jo.get("openid").toString());
+        } catch (Exception e) {
+            log.error("checkLoginToken exception, e:", e);
+            return Response.fail(e.getMessage());
         }
     }
 
