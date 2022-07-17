@@ -13,4 +13,7 @@ import java.io.Serializable;
 public class ProductReq extends Pagination implements Serializable {
     private static final long serialVersionUID = -5343978420738233816L;
 
+    private String className;
+
+    private String series;
 }

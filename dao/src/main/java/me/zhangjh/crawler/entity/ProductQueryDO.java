@@ -18,4 +18,8 @@ public class ProductQueryDO extends ProductDO {
     private Integer offset;
 
     private Integer pageSize = 20;
+
+    private String className;
+
+    private String series;
 }
