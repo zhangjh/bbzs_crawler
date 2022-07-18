@@ -177,13 +177,19 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         Asserts.notEmpty(id, "id");
         Asserts.notEmpty(name, "name");
         if(price.isEmpty()) {
-            log.info("price is empty");
-            page.evaluate("() => {window.scrollBy(0, window.screen.height);}");
-            page.waitFor(scrollWaitTimeout);
-            document = Jsoup.parse(page.content());
-            elements = document.select(PRODUCT_CARD);
-            element = elements.get(i);
-            price = element.select(PRODUCT_PRICE).text();
+            int cnt = 0;
+            while (cnt++ < 3) {
+                log.info("price is empty");
+                page.evaluate("() => {window.scrollBy(0, 300);}");
+                page.waitFor(scrollWaitTimeout);
+                document = Jsoup.parse(page.content());
+                elements = document.select(PRODUCT_CARD);
+                element = elements.get(i);
+                price = element.select(PRODUCT_PRICE).text();
+                if(!price.isEmpty()) {
+                    break;
+                }
+            }
         }
         Asserts.notEmpty(price, name + ": price");
         Asserts.notEmpty(href, name + ": href");
