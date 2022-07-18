@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 import static me.zhangjh.crawler.common.Constant.LV_START_URL;
 import static me.zhangjh.crawler.common.Constant.LV_URL_PRE;
@@ -62,25 +63,42 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         click(page, AGREE_BTN);
         // 2. 点击新品系列
         click(page, NEW_PRODUCT_SERIES_BTN);
-        // 3. 获取所有新品分类的url(新品下有男士、女士两个分类)
-        List<String> classSelectors = Arrays.asList(NEW_SERIES_FORMAN, NEW_SERIES_FORWOMAN);
-        for (String classSelector : classSelectors) {
-            Set<String> urls = new HashSet<>();
-            click(page, classSelector);
-            document = Jsoup.parse(page.content());
-            String classname = document.select(classSelector).select("span").text();
-            Asserts.notEmpty(classname, "classname");
-            Elements elements = document.select(NEW_PRODUCT_SERIES)
-                    .select(NEW_SERIES_URLS);
-            for (Element element : elements) {
-                urls.add(element.attr("href"));
+        // 3. 获取所有女士、男士类别下的手包链接
+        Set<String> urls = new HashSet<>();
+        document = Jsoup.parse(page.content());
+        Elements productTabElements = document.select(PRODUCT_TABS);
+        for (Element tabElement : productTabElements) {
+            Optional<String> anymatch = Stream.of("女士", "男士")
+                    .filter(item -> tabElement.text().startsWith(item)).findAny();
+            if(!anymatch.isPresent()) {
+                continue;
             }
-            classUrlMap.put(classname, urls);
+            String classname = anymatch.get();
+            click(page, tabElement.child(0).cssSelector());
+            Elements classesElements = tabElement.select(FIRST_CLASS);
+            for (Element classesElement : classesElements) {
+                Optional<String> anyMatch = Stream.of("包", "手袋", "皮具")
+                        .filter(classesElement.text()::contains).findAny();
+                if(!anyMatch.isPresent()) {
+                    continue;
+                }
+                click(page, classesElement.child(0).cssSelector());
+                Elements secondClassElements = classesElement.select(SECOND_CLASS);
+                for (Element secondClassElement : secondClassElements) {
+                    Optional<String> anyMatch2 = Stream.of("包", "手袋", "系列")
+                            .filter(secondClassElement.text()::contains).findAny();
+                    if(!anyMatch2.isPresent()) {
+                        continue;
+                    }
+                    urls.add(document.select(secondClassElement.cssSelector()).select("a").attr("href"));
+                }
+                classUrlMap.put(classname, urls);
+            }
         }
-        Asserts.notNull(document, "document");
+
         for (Map.Entry<String, Set<String>> entry : classUrlMap.entrySet()) {
             String classname = entry.getKey();
-            Set<String> urls = entry.getValue();
+            urls = entry.getValue();
             for (String url : urls) {
                 crawlerOnePage(page, url, classname);
             }
@@ -159,7 +177,7 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         Asserts.notEmpty(id, "id");
         Asserts.notEmpty(name, "name");
         if(price.isEmpty()) {
-            log.error("price is empty");
+            log.info("price is empty");
             page.evaluate("() => {window.scrollBy(0, window.screen.height);}");
             page.waitFor(scrollWaitTimeout);
             document = Jsoup.parse(page.content());

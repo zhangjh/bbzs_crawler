@@ -26,6 +26,12 @@ public class Constant {
         public static final String NEW_SERIES_FORMAN = "#nvcat1830006v-button";
         // 新品女士分类
         public static final String NEW_SERIES_FORWOMAN = "#nvcat1830005v-button";
+        // 分类tab标签
+        public static final String PRODUCT_TABS = ".lv-header__main .lv-header-main-nav > li";
+        // 第一级分类
+        public static final String FIRST_CLASS = ".lv-header-main-nav-panel__container > ul > li";
+        // 第二级分类
+        public static final String SECOND_CLASS = ".lv-header-main-nav-child__category > ul > li";
         // 新品分类下系列链接
         public static final String NEW_SERIES_URLS = ".lv-header-main-nav-child__item.-active div .lv-list li > a";
         // 产品卡片
