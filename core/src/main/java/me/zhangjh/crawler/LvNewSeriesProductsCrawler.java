@@ -1,5 +1,6 @@
 package me.zhangjh.crawler;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ruiyun.jvppeteer.core.page.Page;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -176,7 +177,7 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         }
         Asserts.notEmpty(id, "id");
         Asserts.notEmpty(name, "name");
-        if(price.isEmpty()) {
+        if(price.isEmpty() || img.isEmpty()) {
             int cnt = 0;
             while (cnt++ < 3) {
                 log.info("price is empty");
@@ -186,7 +187,14 @@ public class LvNewSeriesProductsCrawler extends Crawler {
                 elements = document.select(PRODUCT_CARD);
                 element = elements.get(i);
                 price = element.select(PRODUCT_PRICE).text();
-                if(!price.isEmpty()) {
+
+                assert element.parent() != null;
+                assert element.parent().parent() != null;
+                srcset = element.parent().parent().select("img").attr("data-srcset");
+                if(StringUtils.isNotBlank("srcset")) {
+                    img = srcset.split(" ")[0];
+                }
+                if(!price.isEmpty() && !img.isEmpty()) {
                     break;
                 }
             }
@@ -200,6 +208,7 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         record.setPrice(price);
         record.setItemUrl(href);
         record.setItemPic(img);
+        log.info("record: {}", JSONObject.toJSONString(record));
         return record;
     }
 
