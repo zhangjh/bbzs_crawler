@@ -79,7 +79,8 @@ public class LvNewSeriesProductsCrawler extends Crawler {
             Elements classesElements = tabElement.select(FIRST_CLASS);
             for (Element classesElement : classesElements) {
                 Optional<String> anyMatch = Stream.of("包", "手袋", "皮具")
-                        .filter(classesElement.text()::contains).findAny();
+                        .filter(classesElement.text()::contains)
+                        .filter(item -> !classesElement.text().contains("订制")).findAny();
                 if(!anyMatch.isPresent()) {
                     continue;
                 }
@@ -201,6 +202,7 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         }
         Asserts.notEmpty(price, name + ": price");
         Asserts.notEmpty(href, name + ": href");
+        Asserts.notEmpty(img, name + ": img");
         ProductDO record = new ProductDO();
         record.setBrand("LV");
         record.setItemCode(id);
