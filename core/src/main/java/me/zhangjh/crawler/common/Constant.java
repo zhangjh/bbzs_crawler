@@ -43,7 +43,7 @@ public class Constant {
         // 产品系列标题
         public static final String PRODUCT_SERIES = ".lv-category__name.-new";
         // 产品价格
-        public static final String PRODUCT_PRICE = "span.notranslate";
+        public static final String PRODUCT_PRICE = ".lv-product-purchase__price .notranslate";
         // 产品主图
         public static final String PRODUCT_IMAGE = "picture > img";
         // 购买按钮

@@ -165,7 +165,6 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         Elements link = h2.select("a");
         String href = link.attr("href");
         String name = link.text();
-        String price = element.select(PRODUCT_PRICE).text();
         String img = "";
         assert element.parent() != null;
         assert element.parent().parent() != null;
@@ -175,32 +174,12 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         }
         Asserts.notEmpty(id, "id");
         Asserts.notEmpty(name, "name");
-        if(price.isEmpty() || img.isEmpty()) {
-            int cnt = 0;
-            while (cnt++ < 3) {
-                log.info("price is empty");
-                page.evaluate("() => {window.scrollBy(0, 300);}");
-                page.waitFor(scrollWaitTimeout);
-                document = Jsoup.parse(page.content());
-                elements = document.select(PRODUCT_CARD);
-                element = elements.get(i);
-                price = element.select(PRODUCT_PRICE).text();
-
-                assert element.parent() != null;
-                assert element.parent().parent() != null;
-                srcset = element.parent().parent().select("img").attr("data-srcset");
-                if(StringUtils.isNotBlank("srcset")) {
-                    img = srcset.split(" ")[0];
-                }
-                if(!price.isEmpty() && !img.isEmpty()) {
-                    break;
-                }
-            }
-        }
-        Asserts.notEmpty(price, name + ": price");
         Asserts.notEmpty(href, name + ": href");
         Asserts.notEmpty(img, name + ": img");
-        Integer hasStock = hasStock(page, href);
+        Map<String, String> map = getDataFromDetail(page, href);
+        String price = map.get("price");
+        Asserts.notEmpty(price, name + ": price");
+
         ProductDO record = new ProductDO();
         record.setBrand("LV");
         record.setItemCode(id);
@@ -208,20 +187,24 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         record.setPrice(price);
         record.setItemUrl(href);
         record.setItemPic(img);
-        record.setHasStock(hasStock);
+        record.setHasStock(Integer.parseInt(map.get("hasStock")));
         log.info("record: {}", JSONObject.toJSONString(record));
         return record;
     }
 
-    // 判断是否有库存
+    // 从详情页获取库存和价格信息
     @SneakyThrows
-    public Integer hasStock(Page page, String productUrl) {
+    public Map<String, String> getDataFromDetail(Page page, String productUrl) {
+        Map<String, String> map = new HashMap<>();
         Page newPage = page.browser().newPage();
         Document document = open(newPage, productUrl, true);
         Elements elements = document.select(PURCHASE_BTN);
+        map.put("hasStock", elements.isEmpty() ? "0" : "1");
+        String price = document.select(PRODUCT_PRICE).text();
+        map.put("price", price);
         // 从详情页获取了库存情况后，还得返回列表页继续下一个商品的爬取
         newPage.close();
-        return elements.isEmpty() ? 0 : 1;
+        return map;
     }
 
     /**
