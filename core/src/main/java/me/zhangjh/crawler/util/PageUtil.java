@@ -1,7 +1,6 @@
 package me.zhangjh.crawler.util;
 
 import com.ruiyun.jvppeteer.core.page.Page;
-import com.ruiyun.jvppeteer.options.WaitForSelectorOptions;
 import lombok.SneakyThrows;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,9 +24,9 @@ public class PageUtil {
 
     // 封装click方法，先等待待点元素出现，然后再点击，点击后等待一段时间
     public static void click(Page page, String cssSelector) throws InterruptedException, ExecutionException {
-        WaitForSelectorOptions options = new WaitForSelectorOptions();
-        options.setTimeout(Integer.parseInt(pageWaitTimeout));
-        page.waitForSelector(cssSelector, options);
+//        WaitForSelectorOptions options = new WaitForSelectorOptions();
+//        options.setTimeout(Integer.parseInt(pageWaitTimeout));
+        page.waitForSelector(cssSelector);
         page.$(cssSelector).click();
         page.waitFor(pageWaitTimeout);
     }
@@ -38,7 +37,7 @@ public class PageUtil {
             url = urlPre + url;
         }
         page.goTo(url);
-        page.waitFor(pageWaitTimeout);
+//        page.waitFor(pageWaitTimeout);
         Document document = null;
         if(needPageParse) {
             document = Jsoup.parse(page.content());

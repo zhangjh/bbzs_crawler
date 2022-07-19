@@ -115,7 +115,7 @@ public class LvNewProductListener extends LvNewSeriesProductsCrawler {
         }
         page.goTo(url);
 
-        page.waitFor(scrollWaitTimeout);
+//        page.waitFor(scrollWaitTimeout);
         if(page.$(PRODUCT_CARD) == null) {
             log.info("url: {}不包含所需要的产品", url);
             return;
