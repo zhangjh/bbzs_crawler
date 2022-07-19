@@ -36,3 +36,4 @@ build/
 /crash/*
 /userData/*
 /start/userData/
+/start/logs/
