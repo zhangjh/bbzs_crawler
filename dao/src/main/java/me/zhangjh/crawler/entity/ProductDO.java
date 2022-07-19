@@ -35,5 +35,9 @@ public class ProductDO {
 
     private String itemSize;
 
+    private Integer notified;
+
+    private Integer hasStock;
+
     private String feature;
 }

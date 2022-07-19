@@ -15,11 +15,13 @@
     <result column="item_url" jdbcType="VARCHAR" property="itemUrl" />
     <result column="item_code" jdbcType="VARCHAR" property="itemCode" />
     <result column="item_size" jdbcType="VARCHAR" property="itemSize" />
+    <result column="notified" jdbcType="TINYINT" property="notified" />
+    <result column="has_stock" jdbcType="TINYINT" property="hasStock" />
     <result column="feature" jdbcType="VARCHAR" property="feature" />
   </resultMap>
   <sql id="Base_Column_List">
     id, create_time, update_time, is_deleted, brand, class, series, item_name, price,
-    item_pic, item_url, item_code, item_size, feature
+    item_pic, item_url, item_code, item_size, notified, has_stock, feature
   </sql>
   <sql id="Where_Condition">
     <if test="id != null">
@@ -39,6 +41,12 @@
     </if>
     <if test="itemCode != null">
       and item_code = #{itemCode}
+    </if>
+    <if test="notified != null">
+      and notified = #{notified}
+    </if>
+    <if test="hasStock != null">
+      and has_stock = #{hasStock}
     </if>
     <if test="orderBy != null">
       order by ${orderBy} desc
@@ -72,27 +80,26 @@
   </delete>
   <insert id="insert" parameterType="me.zhangjh.crawler.entity.ProductDO">
     insert into tbl_products (brand, series, class,
-      item_name, price, item_url,
-      item_pic, item_code, item_size, 
-      feature)
+      item_name, price, item_url, item_pic, item_code, item_size, has_stock, feature)
     values (#{brand,jdbcType=VARCHAR}, #{series,jdbcType=VARCHAR}, #{className,jdbcType=VARCHAR},
       #{itemName,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, #{itemUrl,jdbcType=VARCHAR},
-      #{itemPic,jdbcType=VARCHAR}, #{itemCode,jdbcType=VARCHAR}, #{itemSize,jdbcType=VARCHAR}, 
-      #{feature,jdbcType=VARCHAR})
+      #{itemPic,jdbcType=VARCHAR}, #{itemCode,jdbcType=VARCHAR}, #{itemSize,jdbcType=VARCHAR},
+      #{hasStock,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR})
   </insert>
   <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
-    insert ignore into tbl_products (
-      brand, class, series, item_name, price, item_url, item_pic, item_code, item_size, feature
+    insert into tbl_products (
+      brand, class, series, item_name, price, item_url, item_pic, item_code, item_size, has_stock, feature
     )
     values
     <foreach collection="list" item="item" index="index" separator=",">
       (
         #{item.brand,jdbcType=VARCHAR}, #{item.className,jdbcType=VARCHAR}, #{item.series,jdbcType=VARCHAR},
         #{item.itemName,jdbcType=VARCHAR}, #{item.price,jdbcType=VARCHAR}, #{item.itemUrl,jdbcType=VARCHAR},
-        #{item.itemPic,jdbcType=VARCHAR}, #{item.itemCode,jdbcType=VARCHAR},
-        #{item.itemSize,jdbcType=VARCHAR}, #{item.feature,jdbcType=VARCHAR}
+        #{item.itemPic,jdbcType=VARCHAR}, #{item.itemCode,jdbcType=VARCHAR}, #{item.itemSize,jdbcType=VARCHAR},
+        #{item.hasStock,jdbcType=TINYINT}, #{item.feature,jdbcType=VARCHAR}
       )
     </foreach>
+    on duplicate key update has_stock = values(has_stock), price = values(price)
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="me.zhangjh.crawler.entity.ProductDO">
     update tbl_products
@@ -121,11 +128,17 @@
       <if test="itemUrl != null">
         item_url = #{itemUrl,jdbcType=VARCHAR},
       </if>
+      <if test="hasStock != null">
+        has_stock = #{hasStock,jdbcType=TINYINT},
+      </if>
       <if test="itemCode != null">
         item_code = #{itemCode,jdbcType=VARCHAR},
       </if>
       <if test="itemSize != null">
         item_size = #{itemSize,jdbcType=VARCHAR},
+      </if>
+      <if test="notified != null">
+        notified = #{notified,jdbcType=TINYINT},
       </if>
       <if test="feature != null">
         feature = #{feature,jdbcType=VARCHAR},
@@ -145,6 +158,8 @@
       item_pic = #{itemPic,jdbcType=VARCHAR},
       item_code = #{itemCode,jdbcType=VARCHAR},
       item_size = #{itemSize,jdbcType=VARCHAR},
+      notified = #{notified,jdbcType=TINYINT},
+      has_stock = #{hasStock,jdbcType=TINYINT},
       feature = #{feature,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>

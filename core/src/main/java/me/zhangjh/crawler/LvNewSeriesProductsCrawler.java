@@ -25,6 +25,7 @@ import static me.zhangjh.crawler.common.Constant.LV_START_URL;
 import static me.zhangjh.crawler.common.Constant.LV_URL_PRE;
 import static me.zhangjh.crawler.common.Constant.LvSelector.*;
 import static me.zhangjh.crawler.util.PageUtil.click;
+import static me.zhangjh.crawler.util.PageUtil.open;
 
 /**
  * @author zhangjh
@@ -110,12 +111,8 @@ public class LvNewSeriesProductsCrawler extends Crawler {
     @Override
     public void crawlerOnePage(Page page, String url, String classname) throws InterruptedException, ExecutionException {
         log.info("start craw page url: {}", url);
-        if(!url.startsWith("http")) {
-            url = LV_URL_PRE + url;
-        }
-        page.goTo(url);
+        open(page, url, false);
 
-        page.waitFor(scrollWaitTimeout);
         if(page.$(PRODUCT_CARD) == null) {
             log.info("url: {}不包含所需要的产品", url);
             return;
@@ -203,6 +200,7 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         Asserts.notEmpty(price, name + ": price");
         Asserts.notEmpty(href, name + ": href");
         Asserts.notEmpty(img, name + ": img");
+        Integer hasStock = hasStock(page, href);
         ProductDO record = new ProductDO();
         record.setBrand("LV");
         record.setItemCode(id);
@@ -210,8 +208,20 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         record.setPrice(price);
         record.setItemUrl(href);
         record.setItemPic(img);
+        record.setHasStock(hasStock);
         log.info("record: {}", JSONObject.toJSONString(record));
         return record;
+    }
+
+    // 判断是否有库存
+    @SneakyThrows
+    public Integer hasStock(Page page, String productUrl) {
+        Page newPage = page.browser().newPage();
+        Document document = open(newPage, productUrl, true);
+        Elements elements = document.select(PURCHASE_BTN);
+        // 从详情页获取了库存情况后，还得返回列表页继续下一个商品的爬取
+        newPage.close();
+        return elements.isEmpty() ? 0 : 1;
     }
 
     /**

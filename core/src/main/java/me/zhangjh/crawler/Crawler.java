@@ -17,7 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static me.zhangjh.crawler.common.Constant.LV_URL_PRE;
 import static me.zhangjh.crawler.common.Constant.USER_AGENT;
+import static me.zhangjh.crawler.util.PageUtil.open;
 
 /**
  * @author zhangjh
@@ -35,7 +37,7 @@ public abstract class Crawler {
     private Browser browser;
 
     public Page getPage() throws Exception {
-        PageUtil.init(scrollWaitTimeout);
+        PageUtil.init(scrollWaitTimeout, LV_URL_PRE);
         // 第一次自动下载，后续不再下载
         if(!OSInfo.getOSType().equals(OSInfo.OSType.MACOSX)) {
             BrowserFetcher.downloadIfNotExist(null);
@@ -153,7 +155,7 @@ public abstract class Crawler {
         Page page = null;
         try {
             page = getPage();
-            page.goTo(startUrl);
+            open(page, startUrl, false);
             action(page);
         } catch (Exception e) {
             log.error("me.zhangjh.crawler.Crawler.run exception: ", e);

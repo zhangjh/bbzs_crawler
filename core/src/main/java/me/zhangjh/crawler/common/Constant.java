@@ -46,5 +46,7 @@ public class Constant {
         public static final String PRODUCT_PRICE = "span.notranslate";
         // 产品主图
         public static final String PRODUCT_IMAGE = "picture > img";
+        // 购买按钮
+        public static final String PURCHASE_BTN = ".lv-product-purchase.lv-product__purchase > button";
     }
 }
