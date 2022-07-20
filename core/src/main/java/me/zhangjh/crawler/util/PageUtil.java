@@ -1,7 +1,9 @@
 package me.zhangjh.crawler.util;
 
 import com.ruiyun.jvppeteer.core.page.Page;
+import com.ruiyun.jvppeteer.core.page.Response;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -11,6 +13,7 @@ import java.util.concurrent.ExecutionException;
  * @author zhangjh
  * @date 2022/7/9
  */
+@Slf4j
 public class PageUtil {
 
     private static String pageWaitTimeout;
@@ -36,7 +39,11 @@ public class PageUtil {
         if(!url.startsWith("http")) {
             url = urlPre + url;
         }
-        page.goTo(url);
+        Response response = page.goTo(url);
+        if(response.status() != 200) {
+            log.error("open page failed, url: {}, status: {}", url, response.status());
+            throw new RuntimeException("open page failed, status: " + response.status());
+        }
 //        page.waitFor(pageWaitTimeout);
         Document document = null;
         if(needPageParse) {

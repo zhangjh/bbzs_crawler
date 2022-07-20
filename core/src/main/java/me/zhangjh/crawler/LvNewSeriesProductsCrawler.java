@@ -103,7 +103,11 @@ public class LvNewSeriesProductsCrawler extends Crawler {
             String classname = entry.getKey();
             urls = entry.getValue();
             for (String url : urls) {
-                crawlerOnePage(page, url, classname);
+                try {
+                    crawlerOnePage(page, url, classname);
+                } catch (Exception e) {
+                    log.error("crawlerOnePage exception, url: {}, e: {}", url, e);
+                }
             }
         }
     }
