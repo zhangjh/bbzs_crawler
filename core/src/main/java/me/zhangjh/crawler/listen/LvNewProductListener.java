@@ -134,7 +134,7 @@ public class LvNewProductListener extends LvNewSeriesProductsCrawler {
             // 记录当前最后一个新品
             lastNewProduct = newProducts.get(size - 1);
             page.evaluate("() => {window.scrollBy(0, window.screen.height);}");
-            page.waitFor(scrollWaitTimeout);
+//            page.waitFor(scrollWaitTimeout);
             document = Jsoup.parse(page.content());
             newProducts = this.parseProduct(page, document, classname);
             // 2. 翻页后如果新品还是之前最后一个新品，则表明已经没有新品了，直接退出

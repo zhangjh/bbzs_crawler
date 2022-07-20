@@ -28,7 +28,7 @@ public class PageUtil {
 //        options.setTimeout(Integer.parseInt(pageWaitTimeout));
         page.waitForSelector(cssSelector);
         page.$(cssSelector).click();
-        page.waitFor(pageWaitTimeout);
+//        page.waitFor(pageWaitTimeout);
     }
 
     @SneakyThrows

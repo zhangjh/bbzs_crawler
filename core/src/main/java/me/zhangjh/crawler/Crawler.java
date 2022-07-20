@@ -55,6 +55,7 @@ public abstract class Crawler {
         options.setIgnoreDefaultArgs(Arrays.asList("--disable-extensions", "--enable-automation"));
         browser = Puppeteer.launch(options);
         Page page = browser.pages().get(0);
+        page.setDefaultNavigationTimeout(0);
         hideHeadless(page);
         return page;
     }

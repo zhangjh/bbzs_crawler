@@ -121,7 +121,7 @@ public class LvNewSeriesProductsCrawler extends Crawler {
         Document document;
         while (true) {
             page.evaluate("() => {window.scrollBy(0, window.screen.height);}");
-            page.waitFor(scrollWaitTimeout);
+//            page.waitFor(scrollWaitTimeout);
             document = Jsoup.parse(page.content());
             Elements hasMoreBtn = document.select(HAS_MORE_BTN);
             Elements hasMore = document.select(HAS_MORE);
@@ -197,6 +197,7 @@ public class LvNewSeriesProductsCrawler extends Crawler {
     public Map<String, String> getDataFromDetail(Page page, String productUrl) {
         Map<String, String> map = new HashMap<>();
         Page newPage = page.browser().newPage();
+        newPage.setDefaultNavigationTimeout(0);
         Document document = open(newPage, productUrl, true);
         Elements elements = document.select(PURCHASE_BTN);
         map.put("hasStock", elements.isEmpty() ? "0" : "1");
