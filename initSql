@@ -1,0 +1,76 @@
+-- 初始化建表开始
+CREATE database if NOT EXISTS `bbzs` default character set utf8mb4 collate utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS tbl_products;
+CREATE TABLE tbl_products(
+    id BIGINT NOT NULL AUTO_INCREMENT  COMMENT '主键' ,
+    create_time TIMESTAMP	 NOT NULL DEFAULT CURRENT_TIMESTAMP   COMMENT '创建时间' ,
+    update_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间' ,
+    is_deleted TINYINT(1) NOT NULL  DEFAULT 0 COMMENT '逻辑删除' ,
+    brand VARCHAR(32) NOT NULL   COMMENT '品牌' ,
+		class VARCHAR(10) NULL COMMENT '分类',
+    series VARCHAR(32)    COMMENT '系列' ,
+    item_name VARCHAR(128) NOT NULL   COMMENT '商品名' ,
+    price VARCHAR(10) NOT NULL   COMMENT '价格' ,
+    item_pic VARCHAR(1024) not null   COMMENT '主图' ,
+		item_url VARCHAR(1024) not null   COMMENT '商品链接' ,
+    item_code VARCHAR(32) not null    COMMENT '商品编码' ,
+    item_size VARCHAR(32)    COMMENT '尺寸' ,
+		notified TINYINT(1) NOT NULL DEFAULT 0 COMMENT "是否已通知",
+		has_stock TINYINT(1)	not null	COMMENT '是否有库存',
+    feature VARCHAR(1024)    COMMENT '特征字段' ,
+    PRIMARY KEY (id)
+) COMMENT = 'tbl_products ';
+
+CREATE UNIQUE INDEX ux_item_code ON tbl_products(item_code, is_deleted);
+CREATE INDEX idx_brand_series_name ON tbl_products(brand, series, item_name);
+CREATE INDEX idx_price ON tbl_products(price);
+CREATE INDEX idex_create_time ON tbl_products(create_time);
+
+
+DROP TABLE IF EXISTS tbl_user;
+CREATE TABLE tbl_user(
+    id BIGINT NOT NULL AUTO_INCREMENT  COMMENT '主键' ,
+    create_time TIMESTAMP	 NOT NULL DEFAULT CURRENT_TIMESTAMP   COMMENT '创建时间' ,
+    update_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间' ,
+		is_deleted TINYINT(1) NOT NULL  DEFAULT 0 COMMENT '逻辑删除' ,
+    mobile VARCHAR(11) NULL   COMMENT '手机号' ,
+    outer_id VARCHAR(32)    COMMENT '外部业务键' ,
+    user_info VARCHAR(1024)    COMMENT '用户信息' ,
+    PRIMARY KEY (id)
+) COMMENT = 'tbl_user';
+CREATE UNIQUE INDEX ux_outer_id ON tbl_user(outer_id, is_deleted);
+CREATE INDEX idx_mobile ON tbl_user(mobile);
+CREATE INDEX idx_outer ON tbl_user(outer_id);
+ALTER TABLE tbl_user ADD COLUMN outer_type TINYINT(1) NOT NULL COMMENT "外部类型" AFTER outer_id;
+
+DROP TABLE IF EXISTS tbl_subscribe;
+CREATE TABLE tbl_subscribe(
+    id BIGINT NOT NULL AUTO_INCREMENT  COMMENT '主键' ,
+		create_time TIMESTAMP	 NOT NULL DEFAULT CURRENT_TIMESTAMP   COMMENT '创建时间' ,
+    update_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间' ,
+		is_deleted TINYINT(1) NOT NULL  DEFAULT 0 COMMENT '逻辑删除' ,
+    user_id BIGINT NOT NULL   COMMENT '用户id' ,
+    type INT NOT NULL   COMMENT '订阅类型' ,
+    biz_type INT  COMMENT '订阅业务分类' ,
+    expired_time DATETIME NOT NULL   COMMENT '订阅有效期' ,
+    feature VARCHAR(1024)    COMMENT '特征字段' ,
+    PRIMARY KEY (id)
+) COMMENT = 'tbl_subscribe';
+CREATE INDEX idx_type ON tbl_subscribe(user_id, type, biz_type);
+CREATE INDEX idx_expired ON tbl_subscribe(user_id, expired_time);
+
+DROP TABLE IF EXISTS tbl_msg;
+CREATE TABLE tbl_msg(
+    id BIGINT NOT NULL AUTO_INCREMENT  COMMENT '主键' ,
+    create_time TIMESTAMP	 NOT NULL DEFAULT CURRENT_TIMESTAMP   COMMENT '创建时间' ,
+    update_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间' ,
+		is_deleted TINYINT(1) NOT NULL  DEFAULT 0 COMMENT '逻辑删除' ,
+    user_id BIGINT NOT NULL   COMMENT '用户id 用户消息和系统消息，系统消息为0' ,
+    type INT NOT NULL   COMMENT '消息类型' ,
+    content MEDIUMTEXT   COMMENT '消息内容' ,
+    feature VARCHAR(1024)    COMMENT '特征字段' ,
+    PRIMARY KEY (id)
+) COMMENT = 'tbl_msg';
+CREATE INDEX idx_user ON tbl_msg(user_id);
+ALTER TABLE tbl_msg ADD COLUMN read_status TINYINT(1) NOT NULL DEFAULT 0 COMMENT "是否已读" AFTER content;
+-- 初始化建表结束
