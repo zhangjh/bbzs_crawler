@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.zhangjh.crawler.service.FeedDOMapper">
+  <resultMap id="BaseResultMap" type="me.zhangjh.crawler.entity.FeedDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="feed" jdbcType="VARCHAR" property="feed" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, feed
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_feed
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from tbl_feed
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="me.zhangjh.crawler.entity.FeedDO">
+    insert into tbl_feed (name, feed
+      )
+    values (#{name,jdbcType=VARCHAR}, #{feed,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="me.zhangjh.crawler.entity.FeedDO">
+    insert ignore into tbl_feed
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="feed != null">
+        feed,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="feed != null">
+        #{feed,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="me.zhangjh.crawler.entity.FeedDO">
+    update tbl_feed
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="feed != null">
+        feed = #{feed,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="me.zhangjh.crawler.entity.FeedDO">
+    update tbl_feed
+    set name = #{name,jdbcType=VARCHAR},
+      feed = #{feed,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
