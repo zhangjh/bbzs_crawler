@@ -24,7 +24,7 @@ CREATE TABLE tbl_products(
 CREATE UNIQUE INDEX ux_item_code ON tbl_products(item_code, is_deleted);
 CREATE INDEX idx_brand_series_name ON tbl_products(brand, series, item_name);
 CREATE INDEX idx_price ON tbl_products(price);
-CREATE INDEX idex_create_time ON tbl_products(create_time);
+CREATE INDEX idx_create_time ON tbl_products(create_time);
 
 
 DROP TABLE IF EXISTS tbl_user;
